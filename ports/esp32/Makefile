@@ -3,13 +3,13 @@
 # This is a simple, convenience wrapper around idf.py (which uses cmake).
 
 # Select the board to build for, defaulting to GENERIC.
-BOARD ?= GENERIC
+BOARD ?= LOLIN_S3
 
 # If the build directory is not given, make it reflect the board name.
 BUILD ?= build-$(BOARD)
 
 # Device serial settings.
-PORT ?= /dev/ttyUSB0
+PORT ?= /dev/ttyACM0
 BAUD ?= 460800
 
 PYTHON ?= python3
@@ -52,10 +52,10 @@ clean:
 	idf.py $(IDFPY_FLAGS) fullclean
 
 deploy:
-	idf.py $(IDFPY_FLAGS) -p $(PORT) -b $(BAUD) flash
+	esptool.py --chip esp32s3 --no-stub --port $(PORT) --baud $(BAUD) write_flash  -z 0x0 $(BUILD)/firmware.bin
 
 erase:
-	idf.py $(IDFPY_FLAGS) -p $(PORT) -b $(BAUD) erase_flash
+	esptool.py --chip esp32s3  --port $(PORT)  erase_flash 
 
 submodules:
 	$(MAKE) -f ../../py/mkrules.mk GIT_SUBMODULES="$(GIT_SUBMODULES)" submodules
