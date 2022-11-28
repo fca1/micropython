@@ -1,6 +1,6 @@
 include("$(PORT_DIR)/boards/manifest.py")
 freeze("./modules")
-freeze("./modules/aioble")
-
+require("aioble")
+#package("./modules/ota32")
 
 
