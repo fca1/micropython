@@ -872,7 +872,7 @@ int mp_bluetooth_gap_advertise_start(bool connectable, int32_t interval_us, cons
         return ERRNO_BLUETOOTH_NOT_ACTIVE;
     }
 
-    uint16_t adv_int_min = interval_us / 625;
+    uint16_t adv_int_min = interval_us / 625/2;			// FCA pour essayer de mieux brasser
     uint16_t adv_int_max = interval_us / 625;
     uint8_t adv_type = connectable ? 0 : 2;
     bd_addr_t null_addr = {0};
