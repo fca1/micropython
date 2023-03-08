@@ -2133,13 +2133,31 @@ STATIC void compile_namedexpr_helper(compiler_t *comp, mp_parse_node_t pn_name, 
     }
     compile_node(comp, pn_expr);
     EMIT(dup_top);
-    scope_t *old_scope = comp->scope_cur;
-    if (SCOPE_IS_COMP_LIKE(comp->scope_cur->kind)) {
-        // Use parent's scope for assigned value so it can "escape"
-        comp->scope_cur = comp->scope_cur->parent;
+
+    qstr target = MP_PARSE_NODE_LEAF_ARG(pn_name);
+
+    // When a variable is assigned via := in a comprehension then that variable is bound to
+    // the parent scope.  Any global or nonlocal declarations in the parent scope are honoured.
+    // For details see: https://peps.python.org/pep-0572/#scope-of-the-target
+    if (comp->pass == MP_PASS_SCOPE && SCOPE_IS_COMP_LIKE(comp->scope_cur->kind)) {
+        id_info_t *id_info_parent = mp_emit_common_get_id_for_modification(comp->scope_cur->parent, target);
+        if (id_info_parent->kind == ID_INFO_KIND_GLOBAL_EXPLICIT) {
+            scope_find_or_add_id(comp->scope_cur, target, ID_INFO_KIND_GLOBAL_EXPLICIT);
+        } else {
+            id_info_t *id_info = scope_find_or_add_id(comp->scope_cur, target, ID_INFO_KIND_UNDECIDED);
+            if (comp->scope_cur->parent->parent == NULL) {
+                compile_declare_global(comp, pn_name, id_info);
+            } else {
+                if (id_info->kind == ID_INFO_KIND_GLOBAL_IMPLICIT) {
+                    id_info->kind = ID_INFO_KIND_UNDECIDED;
+                }
+                compile_declare_nonlocal(comp, pn_name, id_info);
+            }
+        }
     }
-    compile_store_id(comp, MP_PARSE_NODE_LEAF_ARG(pn_name));
-    comp->scope_cur = old_scope;
+
+    // Do the store to the target variable.
+    compile_store_id(comp, target);
 }
 
 STATIC void compile_namedexpr(compiler_t *comp, mp_parse_node_struct_t *pns) {
