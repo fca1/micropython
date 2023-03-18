@@ -1274,14 +1274,6 @@ STATIC void compile_declare_nonlocal(compiler_t *comp, mp_parse_node_t pn, id_in
     }
 }
 
-STATIC void compile_declare_global_or_nonlocal(compiler_t *comp, mp_parse_node_t pn, id_info_t *id_info, bool is_global) {
-    if (is_global) {
-        compile_declare_global(comp, pn, id_info);
-    } else {
-        compile_declare_nonlocal(comp, pn, id_info);
-    }
-}
-
 STATIC void compile_global_nonlocal_stmt(compiler_t *comp, mp_parse_node_struct_t *pns) {
     if (comp->pass == MP_PASS_SCOPE) {
         bool is_global = MP_PARSE_NODE_STRUCT_KIND(pns) == PN_global_stmt;
@@ -1296,7 +1288,11 @@ STATIC void compile_global_nonlocal_stmt(compiler_t *comp, mp_parse_node_struct_
         for (size_t i = 0; i < n; i++) {
             qstr qst = MP_PARSE_NODE_LEAF_ARG(nodes[i]);
             id_info_t *id_info = scope_find_or_add_id(comp->scope_cur, qst, ID_INFO_KIND_UNDECIDED);
-            compile_declare_global_or_nonlocal(comp, (mp_parse_node_t)pns, id_info, is_global);
+            if (is_global) {
+                compile_declare_global(comp, (mp_parse_node_t)pns, id_info);
+            } else {
+                compile_declare_nonlocal(comp, (mp_parse_node_t)pns, id_info);
+            }
         }
     }
 }
@@ -2149,13 +2145,14 @@ STATIC void compile_namedexpr_helper(compiler_t *comp, mp_parse_node_t pn_name, 
             scope_find_or_add_id(comp->scope_cur, target, ID_INFO_KIND_GLOBAL_EXPLICIT);
         } else {
             id_info_t *id_info = scope_find_or_add_id(comp->scope_cur, target, ID_INFO_KIND_UNDECIDED);
-            bool is_global = comp->scope_cur->parent->parent == NULL; // comprehension is defined in outer scope
-            if (!is_global && id_info->kind == ID_INFO_KIND_GLOBAL_IMPLICIT) {
-                // Variable was already referenced but now needs to be closed over, so reset the kind
-                // such that scope_check_to_close_over() is called in compile_declare_nonlocal().
-                id_info->kind = ID_INFO_KIND_UNDECIDED;
+            if (comp->scope_cur->parent->parent == NULL) {
+                compile_declare_global(comp, pn_name, id_info);
+            } else {
+                if (id_info->kind == ID_INFO_KIND_GLOBAL_IMPLICIT) {
+                    id_info->kind = ID_INFO_KIND_UNDECIDED;
+                }
+                compile_declare_nonlocal(comp, pn_name, id_info);
             }
-            compile_declare_global_or_nonlocal(comp, pn_name, id_info, is_global);
         }
     }
 
