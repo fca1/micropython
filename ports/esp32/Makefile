@@ -55,7 +55,8 @@ deploy:
 	esptool.py --chip esp32s3 --no-stub --port $(PORT) --baud $(BAUD) write_flash  -z 0x0 $(BUILD)/firmware.bin
 
 erase:
-	esptool.py --chip esp32s3  --port $(PORT)  erase_flash
+	esptool.py -p $(PORT) -b 460800 erase_flash
+	#esptool.py --chip esp32s3  --port $(PORT)  erase_flash
 
 submodules:
 	$(MAKE) -f ../../py/mkrules.mk GIT_SUBMODULES="$(GIT_SUBMODULES)" submodules
