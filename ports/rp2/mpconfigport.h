@@ -105,14 +105,15 @@
 #define MICROPY_PY_URE_MATCH_SPAN_START_END     (1)
 #define MICROPY_PY_UHASHLIB_SHA1                (1)
 #define MICROPY_PY_UCRYPTOLIB                   (1)
-#define MICROPY_PY_UTIME_MP_HAL                 (1)
+#define MICROPY_PY_UTIME_GMTIME_LOCALTIME_MKTIME (1)
+#define MICROPY_PY_UTIME_TIME_TIME_NS           (1)
+#define MICROPY_PY_UTIME_INCLUDEFILE            "ports/rp2/modutime.c"
 #define MICROPY_PY_URANDOM_SEED_INIT_FUNC       (rosc_random_u32())
 #define MICROPY_PY_MACHINE                      (1)
 #define MICROPY_PY_MACHINE_PIN_MAKE_NEW         mp_pin_make_new
 #define MICROPY_PY_MACHINE_BITSTREAM            (1)
 #define MICROPY_PY_MACHINE_PULSE                (1)
 #define MICROPY_PY_MACHINE_PWM                  (1)
-#define MICROPY_PY_MACHINE_PWM_DUTY_U16_NS      (1)
 #define MICROPY_PY_MACHINE_PWM_INCLUDEFILE      "ports/rp2/machine_pwm.c"
 #define MICROPY_PY_MACHINE_I2C                  (1)
 #define MICROPY_PY_MACHINE_SOFTI2C              (1)
