@@ -48,7 +48,7 @@ STATIC void ble_host_task(void *param) {
 
 void mp_bluetooth_nimble_port_hci_init(void) {
     DEBUG_printf("mp_bluetooth_nimble_port_hci_init\n");
-    esp_nimble_hci_and_controller_init();
+    esp_nimble_hci_init();
     // FCA augmenter la puisssance BLE au maxi. 
     esp_ble_tx_power_set(ESP_BLE_PWR_TYPE_DEFAULT, ESP_PWR_LVL_P9);
     esp_ble_tx_power_set(ESP_BLE_PWR_TYPE_ADV, ESP_PWR_LVL_P9);
@@ -57,7 +57,7 @@ void mp_bluetooth_nimble_port_hci_init(void) {
 void mp_bluetooth_nimble_port_hci_deinit(void) {
     DEBUG_printf("mp_bluetooth_nimble_port_hci_deinit\n");
 
-    esp_nimble_hci_and_controller_deinit();
+    esp_nimble_hci_deinit();
 }
 
 void mp_bluetooth_nimble_port_start(void) {
