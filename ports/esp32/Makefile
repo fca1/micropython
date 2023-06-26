@@ -3,10 +3,12 @@
 # This is a simple, convenience wrapper around idf.py (which uses cmake).
 
 # Select the board to build for, defaulting to GENERIC.
-BOARD ?= LOLIN_S3
+#BOARD ?= LOLIN_S3
+BOARD ?= EPI_S3
 
 # If the build directory is not given, make it reflect the board name.
 BUILD ?= build-$(BOARD)
+
 
 # Device serial settings.
 PORT ?= /dev/ttyACM0

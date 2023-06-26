@@ -148,7 +148,7 @@ STATIC mp_obj_t esp32_gpio_deep_sleep_hold(const mp_obj_t enable) {
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_1(esp32_gpio_deep_sleep_hold_obj, esp32_gpio_deep_sleep_hold);
 
-#if CONFIG_IDF_TARGET_ESP32
+#if CONFIG_IDF_TARGET_ESP32 
 
 #include "soc/sens_reg.h"
 
@@ -169,6 +169,27 @@ STATIC mp_obj_t esp32_raw_temperature(void) {
 STATIC MP_DEFINE_CONST_FUN_OBJ_0(esp32_raw_temperature_obj, esp32_raw_temperature);
 
 #endif
+
+
+#if CONFIG_IDF_TARGET_ESP32S3 
+
+#include "driver/temperature_sensor.h"
+
+STATIC mp_obj_t esp32_raw_temperature(void) {
+	float tsens_value;
+	temperature_sensor_handle_t temp_sensor = NULL;
+	temperature_sensor_config_t temp_sensor_config = TEMPERATURE_SENSOR_CONFIG_DEFAULT(10, 50);
+	temperature_sensor_install(&temp_sensor_config, &temp_sensor);
+	temperature_sensor_enable(temp_sensor);
+	temperature_sensor_get_celsius(temp_sensor, &tsens_value);
+	temperature_sensor_disable(temp_sensor);
+	temperature_sensor_uninstall(temp_sensor);
+	return mp_obj_new_float(tsens_value);
+	}
+STATIC MP_DEFINE_CONST_FUN_OBJ_0(esp32_raw_temperature_obj, esp32_raw_temperature);
+
+#endif
+
 
 STATIC mp_obj_t esp32_idf_heap_info(const mp_obj_t cap_in) {
     mp_int_t cap = mp_obj_get_int(cap_in);
@@ -200,7 +221,7 @@ STATIC const mp_rom_map_elem_t esp32_module_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR_wake_on_ext1), MP_ROM_PTR(&esp32_wake_on_ext1_obj) },
     { MP_ROM_QSTR(MP_QSTR_wake_on_ulp), MP_ROM_PTR(&esp32_wake_on_ulp_obj) },
     { MP_ROM_QSTR(MP_QSTR_gpio_deep_sleep_hold), MP_ROM_PTR(&esp32_gpio_deep_sleep_hold_obj) },
-    #if CONFIG_IDF_TARGET_ESP32
+    #if CONFIG_IDF_TARGET_ESP32 || CONFIG_IDF_TARGET_ESP32S3 
     { MP_ROM_QSTR(MP_QSTR_raw_temperature), MP_ROM_PTR(&esp32_raw_temperature_obj) },
     #endif
     { MP_ROM_QSTR(MP_QSTR_idf_heap_info), MP_ROM_PTR(&esp32_idf_heap_info_obj) },
