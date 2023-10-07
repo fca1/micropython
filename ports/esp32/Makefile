@@ -2,11 +2,11 @@
 #
 # This is a simple, convenience wrapper around idf.py (which uses cmake).
 
-<<<<<<< HEAD
 # Select the board to build for, defaulting to GENERIC.
 #BOARD ?= LOLIN_S3
 BOARD ?= EPI_S3
-=======
+BOARD_DIR ?= boards/$(BOARD)
+
 # Select the board to build for:
 ifdef BOARD_DIR
 # Custom board path - remove trailing slash and get the final component of
@@ -24,7 +24,6 @@ $(warning The GENERIC* boards have been renamed to ESP32_GENERIC*)
 endif
 $(error Invalid BOARD specified: $(BOARD_DIR))
 endif
->>>>>>> 8bd2494c9527a27710d15749dc4034515b473874
 
 # If the build directory is not given, make it reflect the board name (and
 # optionally the board variant).
@@ -49,11 +48,8 @@ ifdef USER_C_MODULES
 	CMAKE_ARGS += -DUSER_C_MODULES=${USER_C_MODULES}
 endif
 
-<<<<<<< HEAD
 IDFPY_FLAGS += -D MICROPY_BOARD=$(BOARD) -B $(BUILD) $(CMAKE_ARGS)
-=======
-IDFPY_FLAGS += -D MICROPY_BOARD=$(BOARD) -D MICROPY_BOARD_DIR=$(abspath $(BOARD_DIR)) $(CMAKE_ARGS)
->>>>>>> 8bd2494c9527a27710d15749dc4034515b473874
+#IDFPY_FLAGS += -D MICROPY_BOARD=$(BOARD) -D MICROPY_BOARD_DIR=$(abspath $(BOARD_DIR)) $(CMAKE_ARGS)
 
 ifdef FROZEN_MANIFEST
        IDFPY_FLAGS += -D MICROPY_FROZEN_MANIFEST=$(FROZEN_MANIFEST)

@@ -52,7 +52,7 @@ list(APPEND EXTRA_COMPONENT_DIRS main_${IDF_TARGET})
 # Include LVGL component, ignore KCONFIG
 
 idf_build_set_property(LV_MICROPYTHON 1)
-#idf_build_component(${CMAKE_CURRENT_LIST_DIR}/../../lib/lv_bindings/lvgl)
+idf_build_component(${CMAKE_CURRENT_LIST_DIR}/../../lib/lv_bindings/lvgl)
 idf_build_set_property(COMPILE_DEFINITIONS "-DLV_KCONFIG_IGNORE" APPEND)
 separate_arguments(LV_CFLAGS_ENV UNIX_COMMAND $ENV{LV_CFLAGS})
 list(APPEND LV_CFLAGS ${LV_CFLAGS_ENV})
